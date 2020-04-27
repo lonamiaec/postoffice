@@ -2,6 +2,8 @@ defmodule PostofficeWeb.Api.MessageControllerTest do
   use PostofficeWeb.ConnCase, async: true
 
   alias Postoffice.Messaging
+  alias Postoffice.Messaging.PendingMessage
+  alias Postoffice.Repo
 
   @create_attrs %{
     attributes: %{},
@@ -38,6 +40,19 @@ defmodule PostofficeWeb.Api.MessageControllerTest do
                "attributes" => ["can't be blank"],
                "payload" => ["can't be blank"]
              }
+    end
+
+    test "not mark message as pending when data is valid and topic has not associated publisher", %{conn: conn} do
+      conn = post(conn, Routes.api_message_path(conn, :create), @create_attrs)
+
+      assert length(Repo.all(PendingMessage)) == 0
+    end
+
+    test "mark message as pending when data is valid and topic has associated publisher", %{conn: conn} do
+      #crear un publisher asociado al topic
+      conn = post(conn, Routes.api_message_path(conn, :create), @create_attrs)
+
+      assert length(Repo.all(PendingMessage)) == 1
     end
   end
 end
