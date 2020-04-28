@@ -205,4 +205,26 @@ defmodule Postoffice.Handlers.HttpTest do
     assert message_failure.reason ==
              "Error trying to process message from HttpConsumer with status_code: 300"
   end
+
+  test "message is sent to publisher with public_id header when publisher is of type http" do
+    expected_payload = %{"greeting" => "Hello, Elixir!"}
+    message_content = Map.put(@valid_message_attrs, :payload, expected_payload)
+    {:ok, topic} = Messaging.create_topic(@valid_topic_attrs)
+    {:ok, publisher} =
+      Messaging.create_publisher(Map.put(@valid_publisher_attrs, :topic_id, topic.id))
+
+    {:ok, message} = Messaging.add_message_to_deliver(topic, @valid_message_attrs)
+    expected_headers = [
+      {"content-type", "application/json"},
+      {"public_id", message.public_id}
+    ]
+
+    Http.run(publisher.target, publisher.id, message)
+
+    HTTPoisonMock
+    |> expect(:post, fn "http://fake.target", ^expected_payload, ^expected_headers, _ ->
+       {:ok, %HTTPoison.Response{status_code: 200}}
+      end)
+
+  end
 end

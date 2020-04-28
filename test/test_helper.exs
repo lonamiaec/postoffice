@@ -4,6 +4,7 @@ Ecto.Adapters.SQL.Sandbox.mode(Postoffice.Repo, :manual)
 Mox.defmock(Postoffice.Adapters.HttpMock, for: Postoffice.Adapters.Impl)
 Mox.defmock(Postoffice.Adapters.PubsubMock, for: Postoffice.Adapters.Impl)
 Mox.defmock(Postoffice.Rescuer.Adapters.HttpMock, for: Postoffice.Rescuer.Adapters.Impl)
+Mox.defmock(HTTPoisonMock, for: HTTPoison.Base)
 
 Application.put_env(
   :postoffice,
