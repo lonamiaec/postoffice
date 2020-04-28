@@ -4,6 +4,7 @@ defmodule PostofficeWeb.Api.MessageControllerTest do
   alias Postoffice.Messaging
   alias Postoffice.Messaging.PendingMessage
   alias Postoffice.Repo
+  alias Postoffice.Fixtures
 
   @create_attrs %{
     attributes: %{},
@@ -15,6 +16,22 @@ defmodule PostofficeWeb.Api.MessageControllerTest do
     attributes: %{},
     payload: %{"key" => "test", "key_list" => [%{"letter" => "a"}, %{"letter" => "b"}]},
     topic: "no_topic"
+  }
+  @topic_attributes %{
+    name: "functional_programming",
+    origin_host: "http://fake.target",
+    recovery_enabled: true
+  }
+  @publisher_attributes %{
+    active: true,
+    target: "http://fake.target",
+    initial_message: 0,
+    type: "http",
+  }
+  @message_attributes %{
+    attributes: %{},
+    payload: %{"key" => "test", "key_list" => [%{"letter" => "a"}, %{"letter" => "b"}]},
+    topic: "functional_programming"
   }
 
   setup %{conn: conn} do
@@ -49,8 +66,10 @@ defmodule PostofficeWeb.Api.MessageControllerTest do
     end
 
     test "mark message as pending when data is valid and topic has associated publisher", %{conn: conn} do
-      #crear un publisher asociado al topic
-      conn = post(conn, Routes.api_message_path(conn, :create), @create_attrs)
+      Fixtures.create_topic(@topic_attributes)
+      |> Fixtures.create_publisher(@publisher_attributes)
+
+      conn = post(conn, Routes.api_message_path(conn, :create), @message_attributes)
 
       assert length(Repo.all(PendingMessage)) == 1
     end
