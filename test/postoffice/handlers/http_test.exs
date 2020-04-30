@@ -39,6 +39,7 @@ defmodule Postoffice.Handlers.HttpTest do
 
   setup do
     Mox.stub_with(HttpMock, Postoffice.Adapters.Http)
+    Mox.stub_with(HTTPoisonMock, HTTPoison)
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Postoffice.Repo)
   end
 
@@ -221,10 +222,11 @@ defmodule Postoffice.Handlers.HttpTest do
     ]
 
     expect(HTTPoisonMock, :post, fn "http://fake.target", ^expected_payload, ^expected_headers, _ ->
-       {:ok, %HTTPoison.Response{status_code: 200}}
+       {:ok, %HTTPoison.Response{status_code: 201}}
     end)
 
     Http.run(publisher.target, publisher.id, message)
 
+    assert length(Repo.all(PendingMessage)) == 0
   end
 end
