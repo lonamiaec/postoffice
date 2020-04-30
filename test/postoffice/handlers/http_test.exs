@@ -219,12 +219,15 @@ defmodule Postoffice.Handlers.HttpTest do
       {"public_id", message.public_id}
     ]
 
-    Http.run(publisher.target, publisher.id, message)
+    expect(HttpMock, :publish, fn "http://fake.target", ^message ->
+      {:ok, %HTTPoison.Response{status_code: 200}}
+    end)
 
-    HTTPoisonMock
-    |> expect(:post, fn "http://fake.target", ^expected_payload, ^expected_headers, _ ->
+    expect(HTTPoisonMock, :post, fn "http://fake.target", ^expected_payload, ^expected_headers, _ ->
        {:ok, %HTTPoison.Response{status_code: 200}}
-      end)
+    end)
+
+    Http.run(publisher.target, publisher.id, message)
 
   end
 end
