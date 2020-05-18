@@ -69,6 +69,9 @@ defmodule Postoffice.Fixtures do
       ]
     }
 
+  def empty_google_pubsub_messages(),
+    do: {:ok, %GoogleApi.PubSub.V1.Model.PullResponse{receivedMessages: nil}}
+
   def two_google_pubsub_messages(),
     do: {
       :ok,
@@ -97,6 +100,9 @@ defmodule Postoffice.Fixtures do
         ]
       }
     }
+
+  def google_ack_message(),
+    do: {:ok, %GoogleApi.PubSub.V1.Model.Empty{}}
 
   def pubsub_error(),
     do:
