@@ -1,4 +1,4 @@
-defmodule Postoffice.Messaging.SubscriptionIngestion do
+defmodule Postoffice.PubSubIngester.SubscriptionIngestion do
   use Ecto.Schema
   import Ecto.Changeset
 

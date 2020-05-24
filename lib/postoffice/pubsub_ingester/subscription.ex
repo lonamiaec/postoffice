@@ -8,8 +8,8 @@ defmodule Postoffice.PubSubIngester.Subscription do
     timestamps()
   end
 
-  def changeset(topic, attrs) do
-    topic
+  def changeset(subscription, attrs) do
+    subscription
     |> cast(attrs, [:name])
     |> validate_required([:name])
     |> unique_constraint(:name)

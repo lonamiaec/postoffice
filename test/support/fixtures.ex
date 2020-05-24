@@ -5,6 +5,8 @@ defmodule Postoffice.Fixtures do
   alias Postoffice
   alias Postoffice.Messaging
   alias Postoffice.Repo
+  alias Postoffice.PubSubIngester.Subscription
+  alias Postoffice.PubSubIngester.SubscriptionIngestion
 
   @topic_attrs %{
     name: "test",
@@ -34,6 +36,28 @@ defmodule Postoffice.Fixtures do
   def create_topic(attrs \\ @topic_attrs) do
     {:ok, topic} = Messaging.create_topic(attrs)
     topic
+  end
+
+  @subscrpition_attrs %{
+    name: "test-name"
+  }
+
+  def create_subscription(attrs \\ @subscrpition_attrs) do
+    {:ok, subscription} =
+      %Subscription{}
+      |> Subscription.changeset(attrs)
+      |> Repo.insert()
+
+    subscription
+  end
+
+  def create_subscription_ingestion(topic, subscription) do
+    %SubscriptionIngestion{}
+    |> SubscriptionIngestion.changeset(%{
+      topic_id: topic.id,
+      subscription_id: subscription.id
+    })
+    |> Repo.insert()
   end
 
   def create_publisher(topic, attrs \\ @publisher_attrs) do

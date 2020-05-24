@@ -13,6 +13,8 @@ defmodule Postoffice.Messaging do
   alias Postoffice.Messaging.PublisherSuccess
   alias Postoffice.Messaging.PublisherFailures
   alias Postoffice.Messaging.Topic
+  alias Postoffice.PubSubIngester.SubscriptionIngestion
+  alias Postoffice.PubSubIngester.Subscription
 
   @doc """
   Returns the list of messages.
@@ -236,6 +238,14 @@ defmodule Postoffice.Messaging do
 
   def get_recovery_hosts() do
     from(t in Topic, where: t.recovery_enabled == true, distinct: true, select: t.origin_host)
+    |> Repo.all()
+  end
+
+  def get_subscription_to_topic() do
+    from(si in SubscriptionIngestion,
+     join: t in Topic,
+     join: s in Subscription,
+     select: %{topic: t.name, sub: s.name})
     |> Repo.all()
   end
 end
