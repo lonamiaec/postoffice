@@ -17,11 +17,13 @@ defmodule Postoffice.Application do
       # Starts a worker by calling: Postoffice.Worker.start_link(arg)
       # {Postoffice.Worker, arg},
       {Cluster.Supervisor,
-       [Application.get_env(:libcluster, :topologies), [name: Postoffice.ClusterSupervisor]]}
-      # Postoffice.PublisherProducer,
-      # Postoffice.MessagesProducerSupervisor,
-      # Postoffice.Rescuer.Producer,
-      # Postoffice.Rescuer.Supervisor
+       [Application.get_env(:libcluster, :topologies), [name: Postoffice.ClusterSupervisor]]},
+      Postoffice.PublisherProducer,
+      Postoffice.MessagesProducerSupervisor,
+      Postoffice.Rescuer.Producer,
+      Postoffice.Rescuer.Supervisor,
+      Postoffice.PubSubIngester.Producer,
+      Postoffice.PubSubIngester.Supervisor
     ]
 
     :ok =
