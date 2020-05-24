@@ -1,6 +1,8 @@
 defmodule Postoffice.PubSubIngester.PubSubIngester do
   alias Postoffice.PubSubIngester.PubSubClient
 
+  require Logger
+
   def run(%{sub: sub_name} = subscription_to_topic) do
     conn = PubSubClient.connect()
     PubSubClient.get(conn, subscription_to_topic)
@@ -19,6 +21,7 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
   defp ingest_messages({:ok, messages}) do
     Enum.map(messages, fn message ->
       {:ok, _message} = Postoffice.receive_message(message)
+      Logger.info("Add message from pubsub")
       message["ackId"]
     end)
   end

@@ -366,5 +366,22 @@ defmodule Postoffice.MessagingTest do
 
       assert hosts == []
     end
+
+    test "get_topic_to_subscription returns topics to subscription relation" do
+      topic = Fixtures.create_topic()
+      subscription = Fixtures.create_subscription()
+      Fixtures.create_subscription_ingestion(topic, subscription)
+
+      [%{sub: sub_name, topic: topic_name}] = Messaging.get_subscription_to_topic()
+
+      assert topic_name == topic.name
+      assert sub_name == subscription.name
+    end
+
+    test "get_topic_to_subscription returns empty list when no subscription ingestion" do
+      subscription_to_topic = Messaging.get_subscription_to_topic()
+
+      assert subscription_to_topic == []
+    end
   end
 end
