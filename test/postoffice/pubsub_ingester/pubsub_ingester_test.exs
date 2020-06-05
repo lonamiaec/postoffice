@@ -13,6 +13,7 @@ defmodule Postoffice.PubSubIngester.PubSubIngesterTest do
   setup [:set_mox_from_context, :verify_on_exit!]
 
   setup do
+    System.put_env("SUBSCRIPTION_PREFIX", "prefix")
     {:ok, pubsub_conn: Fixtures.pubsub_conn()}
   end
 
@@ -54,12 +55,13 @@ defmodule Postoffice.PubSubIngester.PubSubIngesterTest do
     end
 
     test "create message when is ingested", %{pubsub_conn: pubsub_conn} do
+      System.put_env("SUBSCRIPTION_PREFIX", "my-shiny-prefix")
       topic = Fixtures.create_topic()
       Fixtures.create_publisher(topic)
 
       expect(PubSubMock, :connect, fn -> pubsub_conn end)
-      expect(PubSubMock, :get, fn  _pubsub_conn, "prefix-fake-sub" -> Fixtures.two_google_pubsub_messages() end)
-      expect(PubSubMock, :confirm, fn  _pubsub_conn, @acks_ids, "prefix-fake-sub" -> Fixtures.google_ack_message() end)
+      expect(PubSubMock, :get, fn  _pubsub_conn, "my-shiny-prefix-fake-sub" -> Fixtures.two_google_pubsub_messages() end)
+      expect(PubSubMock, :confirm, fn  _pubsub_conn, @acks_ids, "my-shiny-prefix-fake-sub" -> Fixtures.google_ack_message() end)
 
       PubSubIngester.run(@argument)
 
