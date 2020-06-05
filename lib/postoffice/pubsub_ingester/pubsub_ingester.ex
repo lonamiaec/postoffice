@@ -1,13 +1,13 @@
 defmodule Postoffice.PubSubIngester.PubSubIngester do
   alias Postoffice.PubSubIngester.PubSubClient
 
-  def run(%{sub: sub_name} = subscription_to_topic) do
+  def run(%{topic: topic_name, pubsub_topic: pubsub_topic_name}) do
     conn = PubSubClient.connect()
-    PubSubClient.get(conn, subscription_to_topic)
+    PubSubClient.get(conn, %{topic: topic_name, sub: "#{impl}-#{pubsub_topic_name}"})
     |> case do
       {:ok, messages} ->
         ingest_messages({:ok, messages})
-        |> confirm(conn, sub_name)
+        |> confirm(conn, "#{impl}-#{pubsub_topic_name}")
 
       error ->
         error
@@ -26,4 +26,5 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
   defp confirm({:ok, []}, _conn, _sub_name), do: {:ok, []}
 
   defp confirm(ackIds, conn, sub_name), do: PubSubClient.confirm(conn, sub_name, ackIds)
+  defp impl, do: "prefix"
 end
