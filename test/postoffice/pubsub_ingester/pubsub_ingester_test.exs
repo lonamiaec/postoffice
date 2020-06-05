@@ -27,31 +27,31 @@ defmodule Postoffice.PubSubIngester.PubSubIngesterTest do
   }
 
   describe "pubsub ingester" do
-    # test "no message created on error", %{pubsub_conn: pubsub_conn} do
-    #   topic = Fixtures.create_topic()
-    #   Fixtures.create_publisher(topic)
+    test "no message created on error", %{pubsub_conn: pubsub_conn} do
+      topic = Fixtures.create_topic()
+      Fixtures.create_publisher(topic)
 
-    #   expect(PubSubMock, :connect, fn -> pubsub_conn end)
-    #   expect(PubSubMock, :get, fn  _pubsub_conn, "fake_sub" -> Fixtures.pubsub_error() end)
-    #   expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "fake_sub" -> Fixtures.google_ack_message() end)
+      expect(PubSubMock, :connect, fn -> pubsub_conn end)
+      expect(PubSubMock, :get, fn  _pubsub_conn, "prefix-fake-sub" -> Fixtures.pubsub_error() end)
+      expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "prefix-fake-sub" -> Fixtures.google_ack_message() end)
 
-    #   PubSubIngester.run(@argument)
+      PubSubIngester.run(@argument)
 
-    #   assert Messaging.list_messages() == []
-    # end
+      assert Messaging.list_messages() == []
+    end
 
-    # test "no message created if no undelivered message found", %{pubsub_conn: pubsub_conn} do
-    #   topic = Fixtures.create_topic()
-    #   Fixtures.create_publisher(topic)
+    test "no message created if no undelivered message found", %{pubsub_conn: pubsub_conn} do
+      topic = Fixtures.create_topic()
+      Fixtures.create_publisher(topic)
 
-    #   expect(PubSubMock, :connect, fn -> pubsub_conn end)
-    #   expect(PubSubMock, :get, fn  _pubsub_conn, "fake_sub" -> Fixtures.empty_google_pubsub_messages() end)
-    #   expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "fake_sub" -> Fixtures.google_ack_message() end)
+      expect(PubSubMock, :connect, fn -> pubsub_conn end)
+      expect(PubSubMock, :get, fn  _pubsub_conn, "prefix-fake-sub" -> Fixtures.empty_google_pubsub_messages() end)
+      expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "prefix-fake-sub" -> Fixtures.google_ack_message() end)
 
-    #   PubSubIngester.run(@argument)
+      PubSubIngester.run(@argument)
 
-    #   assert Messaging.list_messages() == []
-    # end
+      assert Messaging.list_messages() == []
+    end
 
     test "create message when is ingested", %{pubsub_conn: pubsub_conn} do
       topic = Fixtures.create_topic()
@@ -66,14 +66,14 @@ defmodule Postoffice.PubSubIngester.PubSubIngesterTest do
       assert length(Repo.all(PendingMessage)) == 2
     end
 
-    # test "Do not ack when postoffice topic does not exists", %{pubsub_conn: pubsub_conn} do
-    #   expect(PubSubMock, :connect, fn -> pubsub_conn end)
-    #   expect(PubSubMock, :get, fn  _pubsub_conn, "fake_sub" -> Fixtures.two_google_pubsub_messages() end)
-    #   expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "fake_sub" -> Fixtures.google_ack_message() end)
+    test "do not ack when postoffice topic does not exist", %{pubsub_conn: pubsub_conn} do
+      expect(PubSubMock, :connect, fn -> pubsub_conn end)
+      expect(PubSubMock, :get, fn  _pubsub_conn, "prefix-fake-sub" -> Fixtures.two_google_pubsub_messages() end)
+      expect(PubSubMock, :confirm, 0, fn  _pubsub_conn, @acks_ids, "prefix-fake-sub" -> Fixtures.google_ack_message() end)
 
-    #   assert_raise MatchError, fn ->
-    #     PubSubIngester.run(@argument)
-    #   end
-    # end
+      assert_raise MatchError, fn ->
+        PubSubIngester.run(@argument)
+      end
+    end
   end
 end
