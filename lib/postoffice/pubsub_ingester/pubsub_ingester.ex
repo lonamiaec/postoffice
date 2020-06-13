@@ -3,11 +3,31 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
 
   def run(%{topic: topic_name, pubsub_topic: pubsub_topic_name}) do
     conn = PubSubClient.connect()
-    PubSubClient.get(conn, %{topic: topic_name, sub: "#{subscription_prefix}-#{pubsub_topic_name}"})
+
+    PubSubClient.get(conn, %{
+      topic: topic_name,
+      sub: "#{subscription_prefix}-#{pubsub_topic_name}"
+    })
     |> case do
       {:ok, messages} ->
         ingest_messages({:ok, messages})
         |> confirm(conn, "#{subscription_prefix}-#{pubsub_topic_name}")
+
+      error ->
+        error
+    end
+  end
+
+  def get_messages(%{topic: topic_name, pubsub_topic: pubsub_topic_name}) do
+    conn = PubSubClient.connect()
+
+    PubSubClient.get(conn, %{
+      topic: topic_name,
+      sub: "#{subscription_prefix}-#{pubsub_topic_name}"
+    })
+    |> case do
+      {:ok, messages} ->
+        ingest_messages({:ok, messages})
 
       error ->
         error

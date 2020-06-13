@@ -9,6 +9,7 @@ defmodule Postoffice.PubSubIngester.PubSubClient do
       {:ok, response} ->
         response.receivedMessages
         |> build_messages(topic_name)
+
       error ->
         error
     end

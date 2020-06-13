@@ -12,7 +12,6 @@ config :postoffice,
   pubsub_project_name: System.get_env("GCLOUD_PUBSUB_PROJECT_ID", "test"),
   pubsub_max_messages: String.to_integer(System.get_env("GOOGLE_MAX_MESSAGES_PULL", "10"))
 
-
 config :postoffice, PostofficeWeb.Endpoint,
   http: [port: 4000],
   secret_key_base: "ltXgZliDmN0mLNWAF5iobiRF6G3q96oWvttpWlqb1hahcxgAwcxOGG9R5khNiWy5",
