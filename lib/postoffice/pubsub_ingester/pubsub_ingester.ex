@@ -26,8 +26,7 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
       sub: "#{subscription_prefix}-#{pubsub_topic_name}"
     })
     |> case do
-      {:ok, messages} ->
-        ingest_messages({:ok, messages})
+      {:ok, messages} -> messages
 
       error ->
         error

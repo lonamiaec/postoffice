@@ -70,7 +70,7 @@ defmodule Postoffice.MixProject do
       {:goth, "~> 1.1.0"},
       {:httpoison, "~> 1.6"},
       {:mox, "~> 0.5", only: :test},
-      {:gen_stage, "~> 0.14"},
+      {:gen_stage, "~> 1.0.0"},
       {:logger_json, "~> 3.0"},
       {:config_tuples, "~> 0.4"},
       {:libcluster, "~> 3.1"},
@@ -85,7 +85,8 @@ defmodule Postoffice.MixProject do
       {:phoenix_live_dashboard, "~> 0.2.2"},
       {:hackney, "~> 1.16"},
       {:cachex, "~> 3.2"},
-      {:number, "~> 1.0.1"}
+      {:number, "~> 1.0.1"},
+      {:broadway, "~> 0.6.0"}
     ]
   end
 
