@@ -8,6 +8,7 @@ defmodule PostofficeWeb.Router do
   alias Api.TopicController, as: ApiTopicController
   alias Api.PublisherController, as: ApiPublisherController
   alias Api.HealthController, as: ApiHealthController
+  alias Api.SearchController, as: ApiSearchController
   alias MessageController, as: MessageController
   alias IndexController
 
@@ -44,5 +45,6 @@ defmodule PostofficeWeb.Router do
     resources "/topics", ApiTopicController, only: [:create, :show]
     resources "/publishers", ApiPublisherController, only: [:create]
     resources "/health", ApiHealthController, only: [:index]
+    resources "/search", ApiSearchController, only: [:show]
   end
 end
