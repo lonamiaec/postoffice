@@ -375,4 +375,12 @@ defmodule Postoffice.Messaging do
       "select COUNT(*) from publisher_failures group by publisher_id, message_id;"
     ).num_rows
   end
+
+  def get_pubsub_subscriptions() do
+    [
+      %{topic: "test-juanjo", pubsub_subscription: "supply-test-juanjo"},
+      %{topic: "another-test-juanjo", pubsub_subscription: "another-test-juanjo-subscription"},
+      %{topic: "fake_topic", pubsub_subscription: "fake_subscription"},
+    ]
+  end
 end

@@ -18,15 +18,15 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
     end
   end
 
-  def get_messages(%{topic: topic_name, pubsub_topic: pubsub_topic_name}) do
+  def get_messages(%{topic: topic_name, pubsub_subscription: pubsub_subscription}) do
     conn = PubSubClient.connect()
 
     PubSubClient.get(conn, %{
       topic: topic_name,
-      sub: "#{subscription_prefix}-#{pubsub_topic_name}"
+      sub: pubsub_subscription
     })
     |> case do
-      {:ok, messages} -> messages
+      {:ok, messages} -> {:ok, messages}
 
       error ->
         error
