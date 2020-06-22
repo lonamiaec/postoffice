@@ -8,4 +8,8 @@ defmodule PostofficeWeb.Api.SearchView do
       payload: message.payload
     }
   end
+
+  def render("not_found.json", _) do
+    %{}
+  end
 end
