@@ -1,9 +1,10 @@
 defmodule PostofficeWeb.Api.SearchController do
   use PostofficeWeb, :controller
 
-  def show(conn, _) do
+  alias Postoffice.Messaging
+
+  def show(conn, %{"id" => id}) do
     conn
-    |> put_status(:not_found)
-    |> json(%{})
+    |> render("message.json", message: Messaging.get_message!(id))
   end
 end
