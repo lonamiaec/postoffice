@@ -380,7 +380,7 @@ defmodule Postoffice.Messaging do
     [
       %{topic: "test-juanjo", pubsub_subscription: "supply-test-juanjo"},
       %{topic: "another-test-juanjo", pubsub_subscription: "another-test-juanjo-subscription"},
-      %{topic: "fake_topic", pubsub_subscription: "fake_subscription"},
+      %{topic: "fake_topic", pubsub_subscription: "fake_subscription"}
     ]
   end
 end

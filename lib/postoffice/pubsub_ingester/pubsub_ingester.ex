@@ -26,7 +26,8 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
       sub: pubsub_subscription
     })
     |> case do
-      {:ok, messages} -> {:ok, messages}
+      {:ok, messages} ->
+        {:ok, messages}
 
       error ->
         error

@@ -5,7 +5,7 @@ defmodule Postoffice.PubSubIngester.Producer do
   alias Postoffice.Dispatch
   alias Postoffice.Messaging
 
-  @rescuer_interval 1000 * 30
+  @rescuer_interval 1000 * 3
 
   def start_link(_args) do
     Logger.info("Starting subscription producer")
@@ -29,19 +29,17 @@ defmodule Postoffice.PubSubIngester.Producer do
 
   @impl true
   def handle_info(:populate_state, {queue, pending_demand} = _state) do
-    IO.inspect(pending_demand, label: "Entro en el handle_info, a ver que sale!")
     Process.send_after(self(), :populate_state, @rescuer_interval)
 
-    pubsub_subscription = Messaging.get_pubsub_subscriptions()
+    # pubsub_subscription = Messaging.get_pubsub_subscriptions()
+    pubsub_subscription = []
 
-    queue = Enum.reduce(pubsub_subscription, queue, fn subscription, acc ->
+    queue =
+      Enum.reduce(pubsub_subscription, queue, fn subscription, acc ->
         :queue.in(subscription, acc)
       end)
-    IO.inspect(queue, label: "la Queue que vale...")
 
     {events, state} = Dispatch.dispatch_events(queue, pending_demand, [])
-    IO.inspect(events, label: "Los eventos generados han sido estos...")
-    IO.inspect(state, label: "Los state generados han sido estos...")
     {:noreply, events, state}
   end
 end

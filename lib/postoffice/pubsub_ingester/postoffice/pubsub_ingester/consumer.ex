@@ -9,7 +9,7 @@ defmodule Postoffice.PubSubIngester.Consumer do
       name: __MODULE__,
       producer: [
         module: {Postoffice.PubSubIngester.Producer, :ok},
-        transformer: {__MODULE__, :transform, []},
+        transformer: {__MODULE__, :transform, []}
       ],
       processors: [
         default: [concurrency: 5]
@@ -18,16 +18,24 @@ defmodule Postoffice.PubSubIngester.Consumer do
   end
 
   @impl true
-  def handle_message(:default, %{data: data} = message, _context) do
-    IO.inspect(message, label: "Que vale mi mensajito!!!")
-    IO.inspect(data, label: "Y mi datita?????")
-    {:ok, messages} = PubSubIngester.get_messages(data)
+  def handle_message(:default, message, _context) do
+    IO.inspect(message, label: "en el handle_message")
+    {:ok, pubsub_messages} = PubSubIngester.get_messages(message.data)
+
+    ingested_message =
+      pubsub_messages
+      |> Enum.map(fn m ->
+        %{"ackId" => m["ackId"], "topic" => m["topic"]}
+      end)
+
     message
-    |> Message.update_data(fn data -> messages end)
+    |> Message.update_data(fn data ->
+      ingested_message
+    end)
   end
 
   def transform(event, _opts) do
-    IO.inspect(event, label: "Entro en el transform de mis amores!")
+    IO.inspect(event, label: "llego al transform!!!!")
     %Message{
       data: event,
       acknowledger: {__MODULE__, :ack_id, :ack_data}
@@ -35,16 +43,12 @@ defmodule Postoffice.PubSubIngester.Consumer do
   end
 
   def ack(:ack_id, successful, failed) do
-    IO.inspect(successful, label: "Que todo va beeene")
-    IO.inspect(failed, label: "Que todo va maaalmente")
-    pubsub_messages = Enum.map(successful, fn message ->
-      message.data
-    end)
-    |> List.flatten
-    |> Enum.map(fn  message ->
-      %{ackId: message["ackId"], topic: message["topic"]}
-    end)
-    |> Enum.group_by(fn message -> message[:topic] end)
+    pubsub_messages =
+      Enum.map(successful, fn message ->
+        message.data
+      end)
+      |> List.flatten()
+      |> Enum.group_by(fn message -> message["topic"] end)
 
     IO.inspect(pubsub_messages, label: "Habrá funcionado?????")
     :ok

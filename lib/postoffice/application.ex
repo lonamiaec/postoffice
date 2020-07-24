@@ -19,10 +19,10 @@ defmodule Postoffice.Application do
       {Phoenix.PubSub, [name: Postoffice.PubSub, adapter: Phoenix.PubSub.PG2]},
       {Cluster.Supervisor,
        [Application.get_env(:libcluster, :topologies), [name: Postoffice.ClusterSupervisor]]},
-      # Postoffice.PublisherProducer,
-      # Postoffice.MessagesProducerSupervisor,
-      # Postoffice.Rescuer.Producer,
-      # Postoffice.Rescuer.Supervisor
+      Postoffice.PublisherProducer,
+      Postoffice.MessagesProducerSupervisor,
+      Postoffice.Rescuer.Producer,
+      Postoffice.Rescuer.Supervisor,
       Postoffice.PubSubIngester.Producer,
       Postoffice.PubSubIngester.Consumer
     ]
