@@ -19,7 +19,7 @@ defmodule Postoffice.PubSubIngester.Consumer do
 
   @impl true
   def handle_message(:default, message, _context) do
-    IO.inspect(message, label: "en el handle_message")
+    IO.inspect(message.data, label: "en el handle_message")
     {:ok, pubsub_messages} = PubSubIngester.get_messages(message.data)
 
     ingested_message =
@@ -43,6 +43,7 @@ defmodule Postoffice.PubSubIngester.Consumer do
   end
 
   def ack(:ack_id, successful, failed) do
+    IO.inspect(successful, label: "Que coño es succesful")
     pubsub_messages =
       Enum.map(successful, fn message ->
         message.data

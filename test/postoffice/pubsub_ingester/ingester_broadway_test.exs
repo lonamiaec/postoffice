@@ -10,7 +10,7 @@ defmodule Postoffice.PubSubIngester.IngesterBroadwayTest do
   alias Postoffice.PubSubIngester.PubSubIngester
   alias Postoffice.PubSubIngester.Adapters.PubSubMock
 
-  setup [:set_mox_from_context, :verify_on_exit!]
+  setup [:set_mox_global, :verify_on_exit!]
 
   setup do
     System.put_env("SUBSCRIPTION_PREFIX", "prefix")
@@ -32,15 +32,34 @@ defmodule Postoffice.PubSubIngester.IngesterBroadwayTest do
       topic = Fixtures.create_topic()
       Fixtures.create_publisher(topic)
 
-      expect(PubSubMock, :connect, fn -> pubsub_conn end)
-      expect(PubSubMock, :get, fn _pubsub_conn, "prefix-fake-sub" -> Fixtures.pubsub_error() end)
+      # expect(PubSubMock, :connect, fn -> pubsub_conn end)
+      expect(PubSubMock, :get, fn _pubsub_conn, "lll" ->
+        Fixtures.two_google_pubsub_messages()
+      end)
 
-    #   expect(PubSubMock, :confirm, 0, fn _pubsub_conn, @acks_ids, "prefix-fake-sub" ->
-        # Fixtures.google_ack_message()
-    #   end)
+      expect(PubSubMock, :confirm, fn _pubsub_conn, @acks_ids, "prefix-fake-sub" ->
+        Fixtures.google_ack_message()
+      end)
 
-      ref = Broadway.test_message(Postoffice.PubSubIngester.Consumer, %{topic: "bem"})
-      assert_receive {:ack, ^ref, [], [%{data: %{topic: "bem"}}]}
+      expect(PubSubMock, :connect, fn ->
+        pubsub_conn
+      end)
+
+      ref = Broadway.test_message(Postoffice.PubSubIngester.Consumer, %{topic: "bem", pubsub_subscription: "lll"})
+
+      assert_receive {:ack, ^ref, messages = [%{data: [%{"ackId" => "ISE-MD5FU0RQBhYsXUZIUTcZCGhRDk9eIz81IChFEAcGTwIoXXkyVSFBXBoHUQ0Zcnxmd2tTGwMKEwUtVVsRDXptXFcnUAwccHxhcm1dEwIBQlJ4W3OK75niloGyYxclSoGxxaxvM7nUxvhMZho9XhJLLD5-MjVFQV5AEkw5AERJUytDCypYEU4E", "topic" => "bem"}, %{"ackId" => "ISE-MD5FU0RQBhYsXUZIUTcZCGhRDk9eIz81IChFEAcGTwIoXXkyVSFBXBoHUQ0Zcnxmd2tTGwMKEwUtVVoRDXptXFcnUAwccHxhcm9eEwQFRFt-XnOK75niloGyYxclSoGxxaxvM7nUxvhMZho9XhJLLD5-MjVFQV5AEkw5AERJUytDCypYEU4E", "topic" => "bem"}]}], []}
+
+      IO.inspect(messages, label: "Vaaaamos")
+
+      assert 1 == 2
     end
+
+    # test "threeeee", %{pubsub_conn: pubsub_conn} do
+    #   topic = Fixtures.create_topic()
+    #   Fixtures.create_publisher(topic)
+
+
+    #   Postoffice.PubSubIngester.Consumer.ack(:ack_id, [%{"ackId" => "ISE-MD5FU0RQBhYsXUZIUTcZCGhRDk9eIz81IChFEAcGTwIoXXkyVSFBXBoHUQ0Zcnxmd2tTGwMKEwUtVVsRDXptXFcnUAwccHxhcm1dEwIBQlJ4W3OK75niloGyYxclSoGxxaxvM7nUxvhMZho9XhJLLD5-MjVFQV5AEkw5AERJUytDCypYEU4E", "topic" => "bem"}, %{"ackId" => "ISE-MD5FU0RQBhYsXUZIUTcZCGhRDk9eIz81IChFEAcGTwIoXXkyVSFBXBoHUQ0Zcnxmd2tTGwMKEwUtVVoRDXptXFcnUAwccHxhcm9eEwQFRFt-XnOK75niloGyYxclSoGxxaxvM7nUxvhMZho9XhJLLD5-MjVFQV5AEkw5AERJUytDCypYEU4E", "topic" => "bem"}], [])
+    # end
   end
 end

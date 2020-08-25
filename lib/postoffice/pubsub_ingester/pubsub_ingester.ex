@@ -19,8 +19,10 @@ defmodule Postoffice.PubSubIngester.PubSubIngester do
   end
 
   def get_messages(%{topic: topic_name, pubsub_subscription: pubsub_subscription}) do
+    IO.puts "A ver si sale algo"
     conn = PubSubClient.connect()
 
+    IO.inspect(pubsub_subscription, label: "A ver que es esto...")
     PubSubClient.get(conn, %{
       topic: topic_name,
       sub: pubsub_subscription
